@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash
 
 is_number() {
     re='^-?[0-9]+$'
@@ -18,18 +18,31 @@ is_operator() {
     fi
 }
 
-echo 'Enter an arithmetic operation:'
-read -ra input
-input_length="${#input[@]}"
-a="${input[0]}"
-op="${input[1]}"
-b="${input[2]}"
+is_valid_equation() {
+    input=("$@")
+    input_length="${#input[@]}"
+    a="${input[0]}"
+    op="${input[1]}"
+    b="${input[2]}"
+    if [ "$input_length" -eq 3 ] &&
+        [ "$(is_number "$a")" -eq 1 ] && 
+        [ "$(is_operator "$op")" -eq 1 ] && 
+        [ "$(is_number "$b")" -eq 1 ]; then
+        echo 1
+    else
+        echo 0
+    fi
+}
 
-if [ "$input_length" -eq 3 ] &&
-    [ "$(is_number "$a")" -eq 1 ] && 
-    [ "$(is_operator "$op")" -eq 1 ] && 
-    [ "$(is_number "$b")" -eq 1 ]; then
-    echo 'Operation check passed!'
+calculate_equaltion() {
+    echo $(("${input[@]}"))
+}
+
+printf 'Enter an arithmetic operation:\n'
+read -ra input
+
+if [ "$(is_valid_equation "${input[@]}")" -eq 1 ]; then
+    printf "%s\n" "$(calculate_equaltion "${input[@]}")"
 else
-    echo 'Operation check failed!'
+    printf 'Operation check failed!\n'
 fi
