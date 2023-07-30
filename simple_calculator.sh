@@ -19,12 +19,12 @@ is_operator() {
 }
 
 is_valid_equation() {
-    input=("$@")
-    input_length="${#input[@]}"
-    a="${input[0]}"
-    op="${input[1]}"
-    b="${input[2]}"
-    if [ "$input_length" -eq 3 ] &&
+    array=("$@")
+    array_length="${#array[@]}"
+    a="${array[0]}"
+    op="${array[1]}"
+    b="${array[2]}"
+    if [ "$array_length" -eq 3 ] &&
         [ "$(is_number "$a")" -eq 1 ] && 
         [ "$(is_operator "$op")" -eq 1 ] && 
         [ "$(is_number "$b")" -eq 1 ]; then
@@ -38,11 +38,26 @@ calculate_equaltion() {
     echo "scale=2;" "${input[@]}" | bc -l
 }
 
-printf 'Enter an arithmetic operation:\n'
-read -ra input
+history='operation_history.txt'
+welcome='Welcome to the basic calculator!'
+guide="Enter an arithmetic operation or type 'quit' to quit:"
+farewell='Goodbye!'
 
-if [ "$(is_valid_equation "${input[@]}")" -eq 1 ]; then
-    printf "%s\n" "$(calculate_equaltion "${input[@]}")"
-else
-    printf 'Operation check failed!\n'
-fi
+rm "$history"
+echo "$welcome" | tee -a "$history"
+while true; do
+    echo "$guide" | tee -a "$history"
+    read -ra input
+    echo "${input[@]}" >> "$history"
+
+    if [ "${#input[@]}" -eq 1 ] && [ "${input[0]}" == 'quit' ]; then
+        echo "${farewell}" | tee -a "$history"
+        break;
+    fi
+
+    if [ "$(is_valid_equation "${input[@]}")" -eq 1 ]; then
+        calculate_equaltion "${input[@]}" | tee -a "$history" 
+    else
+        echo 'Operation check failed!' | tee -a "$history"
+    fi
+done
