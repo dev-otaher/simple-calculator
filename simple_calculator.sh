@@ -1,7 +1,7 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 
 is_number() {
-    re='^-?[0-9]+$'
+    re='^-?[0-9]+\.?[0-9]*$'
     if [[ "$1" =~ $re ]]; then
         echo 1
     else
@@ -10,7 +10,7 @@ is_number() {
 }
 
 is_operator() {
-    re='^[+-\*/]$'
+    re='^[+-\*/\^]$'
     if [[ "$1" =~ $re ]]; then
         echo 1
     else
@@ -35,7 +35,7 @@ is_valid_equation() {
 }
 
 calculate_equaltion() {
-    echo $(("${input[@]}"))
+    echo "scale=2;" "${input[@]}" | bc -l
 }
 
 printf 'Enter an arithmetic operation:\n'
